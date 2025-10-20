@@ -32,6 +32,7 @@ wait_for_http() {
 echo "==> Building images"
 docker build -t bench-python:latest "$ROOT/python"
 docker build -t bench-php-openswoole:latest "$ROOT/php"
+docker build -t bench-php-fpm:latest "$ROOT/php-fpm"
 docker build -t bench-go:latest "$ROOT/go"
 docker build -t bench-node:latest "$ROOT/node"
 
@@ -45,6 +46,10 @@ docker run -d --cpuset-cpus="0-3" --name bench-python -p 18081:8000 bench-python
 docker rm -f bench-php >/dev/null 2>&1 || true
 docker run -d --cpuset-cpus="0-3" --name bench-php -p 18082:9501 bench-php-openswoole:latest
 
+# PHP FPM + Nginx -> localhost:18085
+docker rm -f bench-php-fpm >/dev/null 2>&1 || true
+docker run -d --cpuset-cpus="0-3" --name bench-php-fpm -p 18085:8080 bench-php-fpm:latest
+
 # Go -> localhost:18083
 docker rm -f bench-go >/dev/null 2>&1 || true
 docker run -d --cpuset-cpus="0-3" --name bench-go -p 18083:8080 bench-go:latest
@@ -57,6 +62,7 @@ docker run -d --cpuset-cpus="0-3" -e WORKERS=4 --name bench-node -p 18084:3000 b
 echo "==> Capturing image sizes"
 docker image inspect bench-python:latest --format='{{.Size}}' > "$IMG_DIR/python.bytes"
 docker image inspect bench-php-openswoole:latest --format='{{.Size}}' > "$IMG_DIR/php.bytes"
+docker image inspect bench-php-fpm:latest --format='{{.Size}}' > "$IMG_DIR/php-fpm.bytes"
 docker image inspect bench-go:latest --format='{{.Size}}' > "$IMG_DIR/go.bytes"
 docker image inspect bench-node:latest --format='{{.Size}}' > "$IMG_DIR/node.bytes"
 
@@ -93,6 +99,7 @@ run_one() {
 
 run_one "python" "18081"
 run_one "php"    "18082"
+run_one "php-fpm" "18085"
 run_one "go"     "18083"
 run_one "node"   "18084"
 

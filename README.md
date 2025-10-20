@@ -2,13 +2,13 @@
 
 Results:
 
-![](imgs/throughput.png)
+![](imgs/throughput_1.png)
 
-![](imgs/latency_p95.png)
+![](imgs/latency_p95_1.png)
 
-![](imgs/memory_peak.png)
+![](imgs/memory_peak_1.png)
 
-![](imgs/image_size.png)
+![](imgs/image_size_1.png)
 
 
 ## Install
@@ -23,5 +23,12 @@ bash scripts/run.sh
 python3 analysis/parse_and_plot.py
 ```
 
+## Stacks
+- Python (FastAPI + Uvicorn)
+- PHP (OpenSwoole)
+- PHP (FPM + Nginx)
+- Go (net/http)
+- Node.js (HTTP cluster)
+
 ## Results
-Go in results/ dir
+Go in ./results/ dir
