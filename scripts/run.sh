@@ -33,26 +33,32 @@ echo "==> Building images"
 docker build -t bench-python:latest "$ROOT/python"
 docker build -t bench-php-openswoole:latest "$ROOT/php"
 docker build -t bench-go:latest "$ROOT/go"
+docker build -t bench-node:latest "$ROOT/node"
 
 # 2) Run containers (detached)
 echo "==> Starting containers"
 # Python -> localhost:18081
 docker rm -f bench-python >/dev/null 2>&1 || true
-docker run -d --cpuset-cpus="0" --name bench-python -p 18081:8000 bench-python:latest
+docker run -d --cpuset-cpus="0-3" --name bench-python -p 18081:8000 bench-python:latest
 
 # PHP OpenSwoole -> localhost:18082
 docker rm -f bench-php >/dev/null 2>&1 || true
-docker run -d --cpuset-cpus="0" --name bench-php -p 18082:9501 bench-php-openswoole:latest
+docker run -d --cpuset-cpus="0-3" --name bench-php -p 18082:9501 bench-php-openswoole:latest
 
 # Go -> localhost:18083
 docker rm -f bench-go >/dev/null 2>&1 || true
-docker run -d --cpuset-cpus="0" --name bench-go -p 18083:8080 bench-go:latest
+docker run -d --cpuset-cpus="0-3" --name bench-go -p 18083:8080 bench-go:latest
+
+# Node -> 18084
+docker rm -f bench-node >/dev/null 2>&1 || true
+docker run -d --cpuset-cpus="0-3" -e WORKERS=4 --name bench-node -p 18084:3000 bench-node:latest
 
 # 3) Image sizes
 echo "==> Capturing image sizes"
 docker image inspect bench-python:latest --format='{{.Size}}' > "$IMG_DIR/python.bytes"
 docker image inspect bench-php-openswoole:latest --format='{{.Size}}' > "$IMG_DIR/php.bytes"
 docker image inspect bench-go:latest --format='{{.Size}}' > "$IMG_DIR/go.bytes"
+docker image inspect bench-node:latest --format='{{.Size}}' > "$IMG_DIR/node.bytes"
 
 # 4) Run K6 for each target. Requires k6 installed locally.
 #    We export a summary to JSON and concurrently monitor memory usage.
@@ -88,6 +94,7 @@ run_one() {
 run_one "python" "18081"
 run_one "php"    "18082"
 run_one "go"     "18083"
+run_one "node"   "18084"
 
 echo "==> Done. Results in: $K6_SUMMARY_DIR and $MEM_DIR and $IMG_DIR"
 echo "==> Next: python3 analysis/parse_and_plot.py"

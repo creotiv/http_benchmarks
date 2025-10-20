@@ -22,8 +22,8 @@ function cpu_work(int $iterations = 20): int
 $server = new OpenSwoole\Http\Server($host, $port, SWOOLE_BASE);
 
 $server->set([
-    'worker_num' => 1,               // keep fair vs other stacks
-    'reactor_num' => 1,
+    'worker_num' => 4,               // align with 4 CPU benchmark
+    'reactor_num' => 4,
     'task_worker_num' => 0,
     'http_compression' => false,
     'enable_coroutine' => true,

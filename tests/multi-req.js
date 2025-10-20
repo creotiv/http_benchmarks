@@ -6,13 +6,13 @@ export const options = {
     scenarios: {
         burst: {
             executor: 'shared-iterations',
-            vus: __ENV.VUS ? parseInt(__ENV.VUS) : 100,
-            iterations: __ENV.ITER ? parseInt(__ENV.ITER) : 100000,
+            vus: __ENV.VUS ? parseInt(__ENV.VUS, 10) : 100,
+            iterations: __ENV.ITER ? parseInt(__ENV.ITER, 10) : 100000,
             maxDuration: __ENV.MAX_DURATION || '10m',
         },
     },
     thresholds: {
-        http_req_duration: ['p(95)<2000', 'p(99)<5000'], // loose guards; we're just collecting
+        http_req_duration: ['p(95)<2000', 'p(99)<5000'],
     },
 };
 
