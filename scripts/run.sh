@@ -31,6 +31,7 @@ wait_for_http() {
 # 1) Build images
 echo "==> Building images"
 docker build -t bench-python:latest "$ROOT/python"
+docker build -t bench-python-jit:latest "$ROOT/python-jit"
 docker build -t bench-php-openswoole:latest "$ROOT/php"
 docker build -t bench-php-fpm:latest "$ROOT/php-fpm"
 docker build -t bench-go:latest "$ROOT/go"
@@ -58,9 +59,14 @@ docker run -d --cpuset-cpus="0-3" --name bench-go -p 18083:8080 bench-go:latest
 docker rm -f bench-node >/dev/null 2>&1 || true
 docker run -d --cpuset-cpus="0-3" -e WORKERS=4 --name bench-node -p 18084:3000 bench-node:latest
 
+# Python -> localhost:18086
+docker rm -f bench-python-jit >/dev/null 2>&1 || true
+docker run -d --cpuset-cpus="0-3" --name bench-python-jit -p 18086:8000 bench-python-jit:latest
+
 # 3) Image sizes
 echo "==> Capturing image sizes"
 docker image inspect bench-python:latest --format='{{.Size}}' > "$IMG_DIR/python.bytes"
+docker image inspect bench-python-jit:latest --format='{{.Size}}' > "$IMG_DIR/python-jit.bytes"
 docker image inspect bench-php-openswoole:latest --format='{{.Size}}' > "$IMG_DIR/php.bytes"
 docker image inspect bench-php-fpm:latest --format='{{.Size}}' > "$IMG_DIR/php-fpm.bytes"
 docker image inspect bench-go:latest --format='{{.Size}}' > "$IMG_DIR/go.bytes"
@@ -97,11 +103,12 @@ run_one() {
   wait "$mon_pid" 2>/dev/null || true
 }
 
-run_one "python" "18081"
-run_one "php"    "18082"
-run_one "php-fpm" "18085"
-run_one "go"     "18083"
-run_one "node"   "18084"
+run_one "python"       "18081"
+run_one "php"          "18082"
+run_one "php-fpm"      "18085"
+run_one "go"           "18083"
+run_one "node"         "18084"
+run_one "python-jit"   "18086"
 
 echo "==> Done. Results in: $K6_SUMMARY_DIR and $MEM_DIR and $IMG_DIR"
 echo "==> Next: python3 analysis/parse_and_plot.py"

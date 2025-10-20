@@ -1,5 +1,8 @@
 FROM python:3.14-alpine
 
+# Enable CPython's experimental tier-2 JIT (available in Python 3.13+)
+ENV PYTHON_JIT=1
+
 # Smaller image, no cache
 RUN pip install --no-cache-dir fastapi uvicorn
 

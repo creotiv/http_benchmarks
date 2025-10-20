@@ -13,7 +13,7 @@ IMG_DIR = RESULTS / "images"
 OUT_DIR = ROOT / "results" / "plots"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-STACKS = ["python", "php", "php-fpm", "go", "node"]
+STACKS = ["python", "python-jit", "php", "php-fpm", "go", "node"]
 
 
 def read_k6_summary(name):
