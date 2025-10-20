@@ -1,0 +1,8 @@
+# Official OpenSwoole runtime for PHP 8.x
+FROM openswoole/swoole:latest
+
+WORKDIR /app
+COPY server.php /app/server.php
+
+EXPOSE 9501
+CMD ["php", "/app/server.php"]
