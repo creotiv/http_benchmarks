@@ -24,3 +24,16 @@ mul={'B':1,'KB':1024,'MB':1024**2,'GB':1024**3,'TB':1024**4}
 print(int(n*mul[u]))
 PY
 }
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  if [[ $# -lt 1 ]]; then
+    echo "usage: $(basename "$0") <function> [args...]" >&2
+    exit 1
+  fi
+  func="$1"; shift
+  if ! declare -f "$func" >/dev/null; then
+    echo "unknown helper '$func'" >&2
+    exit 1
+  fi
+  "$func" "$@"
+fi
